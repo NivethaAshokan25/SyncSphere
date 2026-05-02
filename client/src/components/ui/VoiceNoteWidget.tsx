@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Waveform, Zap, Check } from 'lucide-react';
+import { Mic, Zap, Check } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 const simulatedPhrases = [

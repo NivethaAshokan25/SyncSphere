@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { BarChart3, TrendingUp, Users, Target, AlertCircle } from 'lucide-react';
+import { TrendingUp, Users, Target, AlertCircle } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { TopNav } from '../components/layout/TopNav';
 import { RiskScoreMeter } from '../components/ui/RiskScoreMeter';
@@ -20,7 +20,7 @@ const heatmap = Array.from({ length: 35 }, (_, i) => ({
 }));
 
 export const WorkflowAnalytics = () => {
-  const { tasks, team, blockers, riskScore } = useAppStore();
+  const { tasks, blockers, riskScore } = useAppStore();
   const completed = tasks.filter(t => t.status === 'completed').length;
 
   return (

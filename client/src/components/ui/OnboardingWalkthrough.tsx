@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, FileText, BarChart3, MessageSquare, Zap, ChevronRight, X, Sparkles } from 'lucide-react';
+import { Target, FileText, BarChart3, MessageSquare, ChevronRight, X, Sparkles } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 
 const steps = [

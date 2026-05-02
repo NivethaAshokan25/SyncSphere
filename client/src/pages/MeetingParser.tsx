@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, Zap, ChevronRight, CheckCircle2, Clock, User, Sparkles, Mic } from 'lucide-react';
-import { useAppStore, Task } from '../store/useAppStore';
+import { FileText, Zap, ChevronRight, CheckCircle2, Clock, User, Sparkles, Mic } from 'lucide-react';
+import type { Task } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import { TopNav } from '../components/layout/TopNav';
 import { VoiceNoteWidget } from '../components/ui/VoiceNoteWidget';
 import { cn } from '../utils/cn';

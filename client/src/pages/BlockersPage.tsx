@@ -5,7 +5,7 @@ import { TopNav } from '../components/layout/TopNav';
 import { cn } from '../utils/cn';
 
 export const BlockersPage = () => {
-  const { blockers, tasks, resolveBlocker, markBlockerRead, setActivePage } = useAppStore();
+  const { blockers, tasks, resolveBlocker, markBlockerRead } = useAppStore();
   const blockedTasks = tasks.filter(t => t.isBlocked);
 
   return (

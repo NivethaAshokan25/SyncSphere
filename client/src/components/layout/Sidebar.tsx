@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { 
-  LayoutDashboard, Target, MessageSquare, BarChart3, Settings,
-  Video, AlertCircle, ClipboardList, Command, Mic, ChevronRight
+  LayoutDashboard, Target, MessageSquare, BarChart3,
+  AlertCircle, ClipboardList, Command, ChevronRight
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { cn } from '../../utils/cn';
@@ -15,9 +15,6 @@ const menuItems = [
   { icon: AlertCircle, label: 'Blockers' },
 ];
 
-const bottomItems = [
-  { icon: Settings, label: 'Settings' },
-];
 
 export const Sidebar = () => {
   const { activePage, setActivePage, unreadBlockers, riskScore, setShowCommandPalette, setShowOnboarding } = useAppStore();

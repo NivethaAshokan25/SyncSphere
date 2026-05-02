@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Command, Search, Zap, BarChart3, MessageSquare, 
+  Command, Zap, BarChart3, MessageSquare, 
   AlertCircle, Target, FileText, Mic, X, ArrowRight
 } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
@@ -18,9 +18,7 @@ const commands = [
   { id: 'voice', label: 'Record Voice Note → Task', icon: Mic, page: null, category: 'AI Actions', action: 'voice' },
 ];
 
-interface Props { onNavigate?: (page: string) => void; }
-
-export const AICommandPalette = ({ onNavigate }: Props) => {
+export const AICommandPalette = () => {
   const { showCommandPalette, setShowCommandPalette, setActivePage, setShowHealthReport } = useAppStore();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);

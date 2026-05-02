@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { TrendingUp, Hash, ArrowRight, AlertCircle, CheckCircle2, Clock, UserPlus, Filter, MoreVertical, MessageSquare } from 'lucide-react';
-import { useAppStore, TeamMember } from '../store/useAppStore';
+import { useAppStore } from '../store/useAppStore';
 import { TopNav } from '../components/layout/TopNav';
 import { CommunicationVisibilityEngine } from '../components/timeline/CommunicationVisibilityEngine';
 import { cn } from '../utils/cn';
@@ -12,8 +11,7 @@ const sentimentData = [
 ];
 
 export const TeamPulse = () => {
-  const { team, tasks, blockers } = useAppStore();
-  const recentActivity = tasks.filter(t => t.status === 'in-progress' || t.status === 'completed').slice(0, 4);
+  const { team, blockers } = useAppStore();
 
   return (
     <div className="flex-1 h-screen overflow-y-auto custom-scrollbar bg-background">
