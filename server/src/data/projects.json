@@ -1,0 +1,16 @@
+[
+  {
+    "id": "p1",
+    "name": "Nova Platform",
+    "status": "active",
+    "priority": "high",
+    "description": "Next-gen enterprise dashboard architecture."
+  },
+  {
+    "id": "p2",
+    "name": "SyncSphere Mobile",
+    "status": "active",
+    "priority": "medium",
+    "description": "iOS and Android companion apps."
+  }
+]

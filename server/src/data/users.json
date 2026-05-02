@@ -1,0 +1,23 @@
+[
+  {
+    "id": "u1",
+    "name": "Sarah Chen",
+    "role": "Product Manager",
+    "avatar": "https://i.pravatar.cc/150?u=sarah",
+    "email": "sarah@syncsphere.ai"
+  },
+  {
+    "id": "u2",
+    "name": "Alex Rivera",
+    "role": "Lead Engineer",
+    "avatar": "https://i.pravatar.cc/150?u=alex",
+    "email": "alex@syncsphere.ai"
+  },
+  {
+    "id": "u3",
+    "name": "Elena Vance",
+    "role": "UX Designer",
+    "avatar": "https://i.pravatar.cc/150?u=elena",
+    "email": "elena@syncsphere.ai"
+  }
+]

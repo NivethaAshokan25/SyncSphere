@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0a0a0c;
+  --color-foreground: #ffffff;
+  --color-card: #16161a;
+  --color-accent-primary: #6366f1;
+  --color-accent-secondary: #a855f7;
+  --color-accent-success: #22c55e;
+  --color-accent-warning: #eab308;
+  --color-accent-danger: #ef4444;
+  --color-muted: #94a3b8;
+
+  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-card/40 backdrop-blur-xl border border-white/10 shadow-premium;
+  }
+
+  .glass-secondary {
+    @apply bg-white/5 backdrop-blur-md border border-white/5;
+  }
+
+  .glass-danger {
+    @apply bg-accent-danger/10 backdrop-blur-md border border-accent-danger/20;
+  }
+
+  .glass-success {
+    @apply bg-accent-success/10 backdrop-blur-md border border-accent-success/20;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40;
+  }
+
+  .accent-gradient {
+    @apply bg-gradient-to-br from-accent-primary to-accent-secondary;
+  }
+
+  .shadow-glow-primary {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
+  }
+
+  .shadow-glow-secondary {
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+  }
+
+  .shadow-glow-danger {
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.2);
+  }
+
+  .shadow-glow-success {
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.2);
+  }
+
+  .shadow-glow-warning {
+    box-shadow: 0 0 25px rgba(234, 179, 8, 0.2);
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-white/5 rounded-full hover:bg-white/10 transition-colors;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
