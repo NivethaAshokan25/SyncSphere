@@ -6,13 +6,18 @@ import { TeamPulse } from './pages/TeamPulse';
 import { WorkflowAnalytics } from './pages/WorkflowAnalytics';
 import { LandingDemo } from './pages/LandingDemo';
 import { BlockersPage } from './pages/BlockersPage';
+import { Login } from './pages/Login';
 import { AICommandPalette } from './components/ui/AICommandPalette';
 import { TeamHealthReportModal } from './components/ui/TeamHealthModal';
 import { BlockerNotifications } from './components/ui/BlockerNotifications';
 import { OnboardingWalkthrough } from './components/ui/OnboardingWalkthrough';
 
 function AppInner() {
-  const { activePage } = useAppStore();
+  const { activePage, user } = useAppStore();
+
+  if (!user) {
+    return <Login />;
+  }
 
   const renderPage = () => {
     switch (activePage) {

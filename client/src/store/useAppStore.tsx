@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
+import type { GoogleUser } from '../services/firebase/auth';
+import { firestoreService } from '../services/firebase/firestore';
 
 export interface Task {
   id: string;
@@ -89,6 +91,7 @@ const initialTeam: TeamMember[] = [
 ];
 
 interface AppStore {
+  user: GoogleUser | null;
   tasks: Task[];
   meetings: Meeting[];
   blockers: Blocker[];
@@ -107,11 +110,13 @@ interface AppStore {
   setShowHealthReport: (v: boolean) => void;
   setShowOnboarding: (v: boolean) => void;
   addVoiceTask: (title: string) => void;
+  setUser: (user: GoogleUser | null) => void;
 }
 
 const AppStoreContext = createContext<AppStore | null>(null);
 
 export function AppStoreProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<GoogleUser | null>(null);
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [meetings] = useState<Meeting[]>(initialMeetings);
   const [blockers, setBlockers] = useState<Blocker[]>(initialBlockers);
@@ -129,8 +134,9 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     Math.max(tasks.length, 1) * 10
   );
 
-  const addTasksFromMeeting = useCallback((newTasks: Task[], _meetingTitle: string) => {
+  const addTasksFromMeeting = useCallback((newTasks: Task[], meetingTitle: string) => {
     setTasks(prev => [...prev, ...newTasks]);
+    firestoreService.addExtractedMeetingTasks(meetingTitle, newTasks).catch(console.error);
   }, []);
 
   const markBlockerRead = useCallback((id: string) => {
@@ -142,6 +148,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     if (blocker) {
       setBlockers(prev => prev.filter(b => b.id !== id));
       setTasks(prev => prev.map(t => t.id === blocker.taskId ? { ...t, isBlocked: false, status: 'in-progress' } : t));
+      firestoreService.updateTaskStatus(blocker.taskId, 'in-progress').catch(console.error);
     }
   }, [blockers]);
 
@@ -156,10 +163,11 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppStoreContext.Provider value={{
-      tasks, meetings, blockers, team, activePage, showCommandPalette,
+      user, tasks, meetings, blockers, team, activePage, showCommandPalette,
       showHealthReport, showOnboarding, unreadBlockers, riskScore,
       addTasksFromMeeting, markBlockerRead, resolveBlocker, setActivePage,
       setShowCommandPalette, setShowHealthReport, setShowOnboarding, addVoiceTask,
+      setUser,
     }}>
       {children}
     </AppStoreContext.Provider>

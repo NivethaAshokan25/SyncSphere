@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Search, ChevronDown, Zap, FileDown } from 'lucide-react';
+import { Search, Zap, FileDown } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { BlockerBell } from '../ui/BlockerNotifications';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const TopNav = ({ title, subtitle, showStandupBtn = true, showReportBtn = false }: Props) => {
-  const { setShowCommandPalette, setShowHealthReport } = useAppStore();
+  const { setShowCommandPalette, setShowHealthReport, user, setUser } = useAppStore();
 
   return (
     <header className="sticky top-0 z-40 glass-surface border-b border-white/5 px-8 py-4 flex items-center justify-between gap-4">
@@ -52,12 +52,19 @@ export const TopNav = ({ title, subtitle, showStandupBtn = true, showReportBtn =
           </motion.button>
         )}
         <BlockerBell />
-        <div className="w-px h-6 bg-white/10" />
-        <div className="flex items-center gap-2 cursor-pointer hover:bg-white/5 p-1.5 rounded-xl transition-colors">
-          <div className="w-8 h-8 rounded-full accent-gradient p-[2px]">
-            <div className="w-full h-full rounded-full bg-card flex items-center justify-center text-[10px] font-black">SC</div>
+        <div className="flex items-center gap-3 pl-4 border-l border-white/10">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center p-0.5 relative cursor-pointer" onClick={() => setUser(null)}>
+            <img 
+              src={user?.photoURL || "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex"} 
+              alt="Profile" 
+              className="w-full h-full rounded-full bg-background"
+            />
+            <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-background rounded-full" />
           </div>
-          <ChevronDown className="w-3.5 h-3.5 text-white/30" />
+          <div className="hidden sm:block">
+            <p className="text-sm font-bold text-white leading-tight">{user?.displayName || 'Demo User'}</p>
+            <p className="text-[10px] text-white/50">{user?.email || 'user@syncsphere.ai'}</p>
+          </div>
         </div>
       </div>
     </header>
