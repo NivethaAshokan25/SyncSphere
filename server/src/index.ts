@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import fs from 'fs';
@@ -7,34 +7,33 @@ import path from 'path';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8080; // Cloud Run uses 8080 by default
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../../client/dist')));
-
 // Helper to read data
 const getData = (filename: string) => {
+  // In production, index.js is in dist/ and data is in dist/data/
+  // In development, index.ts is in src/ and data is in src/data/
   const filePath = path.join(__dirname, 'data', `${filename}.json`);
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 };
 
 // API Routes
-app.get('/api/users', (req, res) => {
+app.get('/api/users', (_req: Request, res: Response) => {
   res.json(getData('users'));
 });
 
-app.get('/api/projects', (req, res) => {
+app.get('/api/projects', (_req: Request, res: Response) => {
   res.json(getData('projects'));
 });
 
-app.get('/api/tasks', (req, res) => {
+app.get('/api/tasks', (_req: Request, res: Response) => {
   res.json(getData('tasks'));
 });
 
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', (_req: Request, res: Response) => {
   const tasks = getData('tasks');
   const stats = {
     total: tasks.length,
@@ -46,9 +45,8 @@ app.get('/api/stats', (req, res) => {
 });
 
 // AI Simulation Endpoints
-app.post('/api/ai/parse-meeting', (req, res) => {
+app.post('/api/ai/parse-meeting', (req: Request, res: Response) => {
   const { transcript } = req.body;
-  // Rule-based simulation
   const tasks = [
     { id: 't-new-1', title: 'Update design specs', priority: 'medium', dueDate: '2024-06-25' },
     { id: 't-new-2', title: 'Schedule follow-up with client', priority: 'high', dueDate: '2024-06-18' }
@@ -56,19 +54,24 @@ app.post('/api/ai/parse-meeting', (req, res) => {
   res.json({ tasks, summary: "Meeting focused on design alignment and client communication." });
 });
 
-app.get('/api/ai/standup', (req, res) => {
+app.get('/api/ai/standup', (_req: Request, res: Response) => {
   res.json({
     summary: "Today's Focus: API Gateway completion and addressing the security audit blocker. Overall velocity is stable.",
     highlights: ["Alex is making progress on API Gateway", "Security audit is pending results"]
   });
 });
 
-// The "catchall" handler: for any request that doesn't
-// match one above, send back React's index.html file.
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+// Serve static files from the React app
+// Structure in Docker:
+// /app/client/dist
+// /app/server/dist/index.js
+const clientDistPath = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
+
+app.get('*', (_req: Request, res: Response) => {
+  res.sendFile(path.join(clientDistPath, 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
