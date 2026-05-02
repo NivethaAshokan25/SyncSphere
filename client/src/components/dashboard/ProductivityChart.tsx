@@ -1,84 +1,76 @@
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from 'recharts';
-import { motion } from 'framer-motion';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const data = [
-  { name: 'Mon', value: 45 },
-  { name: 'Tue', value: 52 },
-  { name: 'Wed', value: 48 },
-  { name: 'Thu', value: 61 },
-  { name: 'Fri', value: 55 },
-  { name: 'Sat', value: 67 },
-  { name: 'Sun', value: 72 },
+  { name: 'Mon', score: 85 },
+  { name: 'Tue', score: 72 },
+  { name: 'Wed', score: 91 },
+  { name: 'Thu', score: 65 },
+  { name: 'Fri', score: 88 },
+  { name: 'Sat', score: 45 },
+  { name: 'Sun', score: 30 },
 ];
 
 export const ProductivityChart = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="glass p-8 rounded-[2rem] h-full flex flex-col"
-    >
-      <div className="flex justify-between items-center mb-8">
+    <div className="glass p-8 rounded-[2.5rem] h-full flex flex-col">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-xl font-bold text-white">Team Productivity</h3>
-          <p className="text-muted text-sm">Real-time engagement velocity</p>
+          <h3 className="text-xl font-black text-white">Team Velocity</h3>
+          <p className="text-xs text-muted font-bold uppercase tracking-widest mt-1">Activity over the last 7 days</p>
         </div>
         <div className="flex gap-2">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-primary/10 border border-accent-primary/20">
-            <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
-            <span className="text-xs font-bold text-accent-primary">Live</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent-primary/10 border border-accent-primary/20">
+            <span className="w-2 h-2 rounded-full bg-accent-primary" />
+            <span className="text-[10px] font-black text-accent-primary">PRODUCTIVITY SCORE</span>
           </div>
         </div>
       </div>
       
-      <div className="flex-1 w-full min-h-[300px]">
+      <div className="flex-1 w-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
             <defs>
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
                 <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff05" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
             <XAxis 
               dataKey="name" 
-              axisLine={false} 
+              stroke="#94a3b8" 
+              fontSize={10} 
               tickLine={false} 
-              tick={{ fill: '#94a3b8', fontSize: 12 }}
-              dy={10}
+              axisLine={false}
+              tick={{ fontWeight: 800 }}
             />
-            <YAxis hide />
+            <YAxis 
+              stroke="#94a3b8" 
+              fontSize={10} 
+              tickLine={false} 
+              axisLine={false}
+              tick={{ fontWeight: 800 }}
+            />
             <Tooltip 
               contentStyle={{ 
                 backgroundColor: '#16161a', 
                 border: '1px solid rgba(255,255,255,0.1)',
                 borderRadius: '16px',
-                backdropFilter: 'blur(10px)'
-              }}
-              itemStyle={{ color: '#fff' }}
+                fontSize: '12px',
+                fontWeight: 'bold'
+              }} 
             />
             <Area 
               type="monotone" 
-              dataKey="value" 
+              dataKey="score" 
               stroke="#6366f1" 
               strokeWidth={4}
               fillOpacity={1} 
-              fill="url(#colorValue)" 
-              animationDuration={2000}
+              fill="url(#colorScore)" 
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
-    </motion.div>
+    </div>
   );
 };

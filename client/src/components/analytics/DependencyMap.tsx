@@ -1,5 +1,5 @@
-import React from 'react';
 import { motion } from 'framer-motion';
+import { cn } from '../../utils/cn';
 
 interface Node {
   id: string;
@@ -137,6 +137,3 @@ export const DependencyMap = () => {
   );
 };
 
-function cn(...classes: any[]) {
-  return classes.filter(Boolean).join(' ');
-}
