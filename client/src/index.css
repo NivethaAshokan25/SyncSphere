@@ -1,98 +1,143 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #0a0a0c;
-  --color-foreground: #ffffff;
-  --color-card: #16161a;
+  --color-background: #060608;
+  --color-surface: #0e0e12;
+  --color-card: #13131a;
+  --color-foreground: #f8fafc;
+  --color-muted: #64748b;
+  --color-border: rgba(255,255,255,0.08);
+
   --color-accent-primary: #6366f1;
   --color-accent-secondary: #a855f7;
-  --color-accent-success: #22c55e;
-  --color-accent-warning: #eab308;
+  --color-accent-success: #10b981;
+  --color-accent-warning: #f59e0b;
   --color-accent-danger: #ef4444;
-  --color-muted: #94a3b8;
+  --color-accent-info: #06b6d4;
 
-  --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  --shadow-premium: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 24px rgba(99,102,241,0.25);
+  --shadow-glow-sm: 0 0 12px rgba(99,102,241,0.15);
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @layer base {
+  * { box-sizing: border-box; }
   body {
-    @apply bg-background text-foreground font-sans antialiased overflow-x-hidden;
+    @apply bg-background text-foreground antialiased overflow-x-hidden;
+    font-family: 'Inter', system-ui, sans-serif;
   }
+  ::selection { background: rgba(99,102,241,0.3); }
 }
 
 @layer components {
+  /* Glass morphism */
   .glass {
-    @apply bg-card/40 backdrop-blur-xl border border-white/10 shadow-premium;
+    background: rgba(19, 19, 26, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .glass-surface {
+    background: rgba(14, 14, 18, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .glass-card {
+    background: rgba(19, 19, 26, 0.9);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
   }
 
-  .glass-secondary {
-    @apply bg-white/5 backdrop-blur-md border border-white/5;
-  }
-
-  .glass-danger {
-    @apply bg-accent-danger/10 backdrop-blur-md border border-accent-danger/20;
-  }
-
-  .glass-success {
-    @apply bg-accent-success/10 backdrop-blur-md border border-accent-success/20;
-  }
-
+  /* Gradients */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/40;
+    background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.5));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-
+  .text-gradient-primary {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
   .accent-gradient {
-    @apply bg-gradient-to-br from-accent-primary to-accent-secondary;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+  }
+  .success-gradient {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  .danger-gradient {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
   }
 
-  .shadow-glow-primary {
-    box-shadow: 0 0 25px rgba(99, 102, 241, 0.2);
+  /* Glow effects */
+  .glow-primary { box-shadow: 0 0 24px rgba(99,102,241,0.3); }
+  .glow-success { box-shadow: 0 0 24px rgba(16,185,129,0.3); }
+  .glow-danger  { box-shadow: 0 0 24px rgba(239,68,68,0.3); }
+  .glow-warning { box-shadow: 0 0 24px rgba(245,158,11,0.3); }
+
+  /* Priority badges */
+  .badge-high    { @apply bg-red-500/15 text-red-400 border border-red-500/20; }
+  .badge-medium  { @apply bg-amber-500/15 text-amber-400 border border-amber-500/20; }
+  .badge-low     { @apply bg-emerald-500/15 text-emerald-400 border border-emerald-500/20; }
+
+  /* Status dots */
+  .status-online  { @apply bg-emerald-400; }
+  .status-busy    { @apply bg-rose-400; }
+  .status-away    { @apply bg-amber-400; }
+  .status-offline { @apply bg-slate-500; }
+
+  /* Cards with hover lift */
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    border-color: rgba(255,255,255,0.14);
   }
 
-  .shadow-glow-secondary {
-    box-shadow: 0 0 25px rgba(168, 85, 247, 0.2);
+  /* Blocker pulse animation */
+  .blocker-pulse {
+    animation: blockerPulse 2s ease-in-out infinite;
+  }
+  @keyframes blockerPulse {
+    0%, 100% { border-color: rgba(239,68,68,0.2); box-shadow: 0 0 0 rgba(239,68,68,0); }
+    50%       { border-color: rgba(239,68,68,0.6); box-shadow: 0 0 20px rgba(239,68,68,0.2); }
   }
 
-  .shadow-glow-danger {
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.2);
+  /* Shimmer loading */
+  .shimmer {
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
   }
 
-  .shadow-glow-success {
-    box-shadow: 0 0 25px rgba(34, 197, 94, 0.2);
+  /* Float animation */
+  .float {
+    animation: float 5s ease-in-out infinite;
   }
-
-  .shadow-glow-warning {
-    box-shadow: 0 0 25px rgba(234, 179, 8, 0.2);
-  }
-
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
   }
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
+/* Scrollbars */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-white/10 rounded-full; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { @apply bg-white/20; }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-white/5 rounded-full hover:bg-white/10 transition-colors;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
