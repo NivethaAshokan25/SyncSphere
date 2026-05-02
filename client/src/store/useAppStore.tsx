@@ -1,55 +1,10 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { GoogleUser } from '../services/firebase/auth';
 import { firestoreService } from '../services/firebase/firestore';
-
-export interface Task {
-  id: string;
-  title: string;
-  assignee: string;
-  assigneeInitials: string;
-  assigneeColor: string;
-  status: 'todo' | 'in-progress' | 'completed' | 'blocked';
-  priority: 'high' | 'medium' | 'low';
-  dueDate: string;
-  project: string;
-  isBlocked: boolean;
-  blockerReason?: string;
-  source?: 'manual' | 'meeting-parsed' | 'ai-suggested';
-}
-
-export interface Meeting {
-  id: string;
-  title: string;
-  date: string;
-  duration: string;
-  tasksExtracted: number;
-  confidence: number;
-  summary: string;
-  tasks: Task[];
-}
-
-export interface Blocker {
-  id: string;
-  title: string;
-  assignee: string;
-  severity: 'critical' | 'high' | 'medium';
-  time: string;
-  taskId: string;
-  isRead: boolean;
-}
-
-export interface TeamMember {
-  id: string;
-  name: string;
-  initials: string;
-  role: string;
-  color: string;
-  tasksCount: number;
-  completedCount: number;
-  workloadPercent: number;
-  status: 'online' | 'busy' | 'away' | 'offline';
-}
+import { calculateRiskScore } from '../utils/analytics';
+import type { Task, Meeting, Blocker, TeamMember } from '../types';
+import { ROUTES } from '../constants';
 
 const initialTasks: Task[] = [
   { id: 't1', title: 'API Gateway Implementation', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-rose-500', status: 'in-progress', priority: 'high', dueDate: 'Jun 12', project: 'Nova Platform', isBlocked: false, source: 'manual' },
@@ -121,22 +76,18 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
   const [meetings] = useState<Meeting[]>(initialMeetings);
   const [blockers, setBlockers] = useState<Blocker[]>(initialBlockers);
   const [team] = useState<TeamMember[]>(initialTeam);
-  const [activePage, setActivePage] = useState('landing');
+  const [activePage, setActivePage] = useState(ROUTES.LANDING);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showHealthReport, setShowHealthReport] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  const unreadBlockers = blockers.filter(b => !b.isRead).length;
-  const riskScore = Math.round(
-    (blockers.filter(b => b.severity === 'critical').length * 30 +
-     blockers.filter(b => b.severity === 'high').length * 20 +
-     tasks.filter(t => t.isBlocked).length * 10) / 
-    Math.max(tasks.length, 1) * 10
-  );
+  const unreadBlockers = useMemo(() => blockers.filter(b => !b.isRead).length, [blockers]);
+  const riskScore = useMemo(() => calculateRiskScore(tasks, blockers), [tasks, blockers]);
 
   const addTasksFromMeeting = useCallback((newTasks: Task[], meetingTitle: string) => {
     setTasks(prev => [...prev, ...newTasks]);
-    firestoreService.addExtractedMeetingTasks(meetingTitle, newTasks).catch(console.error);
+    // Enterprise Audit: Fire-and-forget firestore sync with error logging
+    firestoreService.addExtractedMeetingTasks(meetingTitle, newTasks).catch(err => console.error('[STORE] Firestore sync failed:', err));
   }, []);
 
   const markBlockerRead = useCallback((id: string) => {
@@ -148,7 +99,7 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     if (blocker) {
       setBlockers(prev => prev.filter(b => b.id !== id));
       setTasks(prev => prev.map(t => t.id === blocker.taskId ? { ...t, isBlocked: false, status: 'in-progress' } : t));
-      firestoreService.updateTaskStatus(blocker.taskId, 'in-progress').catch(console.error);
+      firestoreService.updateTaskStatus(blocker.taskId, 'in-progress').catch(err => console.error('[STORE] Blocker resolution sync failed:', err));
     }
   }, [blockers]);
 
@@ -161,14 +112,22 @@ export function AppStoreProvider({ children }: { children: ReactNode }) {
     setTasks(prev => [newTask, ...prev]);
   }, []);
 
+  const value = useMemo(() => ({
+    user, tasks, meetings, blockers, team, activePage, showCommandPalette,
+    showHealthReport, showOnboarding, unreadBlockers, riskScore,
+    addTasksFromMeeting, markBlockerRead, resolveBlocker, setActivePage,
+    setShowCommandPalette, setShowHealthReport, setShowOnboarding, addVoiceTask,
+    setUser,
+  }), [
+    user, tasks, meetings, blockers, team, activePage, showCommandPalette,
+    showHealthReport, showOnboarding, unreadBlockers, riskScore,
+    addTasksFromMeeting, markBlockerRead, resolveBlocker, setActivePage,
+    setShowCommandPalette, setShowHealthReport, setShowOnboarding, addVoiceTask,
+    setUser
+  ]);
+
   return (
-    <AppStoreContext.Provider value={{
-      user, tasks, meetings, blockers, team, activePage, showCommandPalette,
-      showHealthReport, showOnboarding, unreadBlockers, riskScore,
-      addTasksFromMeeting, markBlockerRead, resolveBlocker, setActivePage,
-      setShowCommandPalette, setShowHealthReport, setShowOnboarding, addVoiceTask,
-      setUser,
-    }}>
+    <AppStoreContext.Provider value={value}>
       {children}
     </AppStoreContext.Provider>
   );

@@ -1,4 +1,4 @@
-import type { Task, Blocker } from '../../store/useAppStore';
+import type { Task, Blocker } from '../../types';
 
 /**
  * Firebase Firestore Database Scaffold

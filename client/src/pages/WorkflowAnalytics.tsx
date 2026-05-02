@@ -34,7 +34,7 @@ export const WorkflowAnalytics = () => {
         </motion.div>
 
         {/* Top Metrics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Key Performance Indicators">
           {[
             { label: 'Avg Cycle Time', value: '3.2 Days', icon: Target, color: 'text-indigo-400', bg: 'bg-indigo-500/10' },
             { label: 'Throughput', value: `${completed + 12}/wk`, icon: TrendingUp, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
@@ -42,13 +42,16 @@ export const WorkflowAnalytics = () => {
             { label: 'Blocker Rate', value: `${Math.round((blockers.length/Math.max(tasks.length,1))*100)}%`, icon: AlertCircle, color: 'text-rose-400', bg: 'bg-rose-500/10' },
           ].map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-              className={`glass-card rounded-2xl p-5 border border-white/5 card-hover ${s.bg}`}>
-              <div className={`p-2.5 rounded-xl inline-flex mb-4 ${s.bg}`}><s.icon className={`w-5 h-5 ${s.color}`} /></div>
+              className={`glass-card rounded-2xl p-5 border border-white/5 card-hover ${s.bg}`}
+              role="status"
+              aria-label={`${s.label}: ${s.value}`}
+            >
+              <div className={`p-2.5 rounded-xl inline-flex mb-4 ${s.bg}`} aria-hidden="true"><s.icon className={`w-5 h-5 ${s.color}`} /></div>
               <p className="text-[10px] font-black text-white/40 uppercase tracking-wider mb-1">{s.label}</p>
               <h3 className="text-2xl font-black text-white">{s.value}</h3>
             </motion.div>
           ))}
-        </div>
+        </section>
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -56,9 +59,9 @@ export const WorkflowAnalytics = () => {
             className="glass-card rounded-3xl p-6 border border-white/5">
             <h3 className="font-black text-white mb-1">Sprint Velocity Trend</h3>
             <p className="text-xs text-white/40 mb-6">Story points per sprint</p>
-            <div className="h-52">
+            <div className="h-52" role="img" aria-label="Line chart showing sprint velocity trend over 6 sprints. Velocity is increasing from 34 to 55 points.">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={cycleData}>
+                <AreaChart data={cycleData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="sprintGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#a855f7" stopOpacity={0.25} />
@@ -79,9 +82,9 @@ export const WorkflowAnalytics = () => {
             className="glass-card rounded-3xl p-6 border border-white/5">
             <h3 className="font-black text-white mb-1">Team Efficiency Score</h3>
             <p className="text-xs text-white/40 mb-6">AI-computed individual performance</p>
-            <div className="h-52">
+            <div className="h-52" role="img" aria-label="Bar chart showing team efficiency scores. Sarah leads with 82, followed by Elena at 91, Alex at 74, and Marcus at 68.">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={teamEffData} barCategoryGap="30%">
+                <BarChart data={teamEffData} barCategoryGap="30%" margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" vertical={false} />
                   <XAxis dataKey="name" stroke="transparent" tick={{ fill: '#64748b', fontSize: 11, fontWeight: 700 }} />
                   <YAxis stroke="transparent" tick={{ fill: '#64748b', fontSize: 11, fontWeight: 700 }} domain={[0, 100]} />
@@ -101,13 +104,15 @@ export const WorkflowAnalytics = () => {
             className="lg:col-span-2 glass-card rounded-3xl p-6 border border-white/5">
             <h3 className="font-black text-white mb-1">Activity Heatmap</h3>
             <p className="text-xs text-white/40 mb-6">5 weeks of team activity intensity</p>
-            <div className="grid grid-cols-7 gap-2">
-              {['M','T','W','T','F','S','S'].map(d => <p key={d} className="text-center text-[9px] font-black text-white/20">{d}</p>)}
+            <div className="grid grid-cols-7 gap-2" role="grid" aria-label="Activity heatmap for the last 5 weeks">
+              {['M','T','W','T','F','S','S'].map(d => <p key={d} className="text-center text-[9px] font-black text-white/20" aria-hidden="true">{d}</p>)}
               {heatmap.map((cell, i) => (
                 <motion.div key={i}
                   initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.01 }}
                   className="aspect-square rounded-lg transition-all"
+                  role="gridcell"
+                  aria-label={`Activity intensity: ${Math.round(cell.intensity * 100)}% on day ${i + 1}${cell.isWeekend ? ' (Weekend)' : ''}`}
                   style={{
                     background: cell.isWeekend ? 'rgba(255,255,255,0.02)' :
                       cell.intensity > 0.7 ? '#6366f1' : cell.intensity > 0.4 ? 'rgba(99,102,241,0.4)' : 'rgba(99,102,241,0.1)',

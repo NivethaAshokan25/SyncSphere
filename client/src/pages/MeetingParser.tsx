@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Zap, ChevronRight, CheckCircle2, Clock, User, Sparkles, Mic } from 'lucide-react';
-import type { Task } from '../store/useAppStore';
+import type { Task } from '../types';
 import { useAppStore } from '../store/useAppStore';
 import { TopNav } from '../components/layout/TopNav';
 import { VoiceNoteWidget } from '../components/ui/VoiceNoteWidget';
+import { geminiService } from '../services/gemini/ai';
 import { cn } from '../utils/cn';
 
 const sampleTranscript = `Sarah: Alright team, let's wrap up. Alex, can you get the API docs updated by Thursday?
@@ -14,33 +15,36 @@ Elena: Absolutely, I'll also add dark mode variants.
 Sarah: Great. Marcus, the DB migration scripts need testing. Can you pair with Alex on that?
 Marcus: Yes, I'll set up the test environment today and we'll run through it tomorrow morning.`;
 
-const parsedTasks: Task[] = [
-  { id: 'mp1', title: 'Update API documentation', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-rose-500', status: 'todo', priority: 'high', dueDate: 'Jun 5', project: 'Nova Platform', isBlocked: false, source: 'meeting-parsed' },
-  { id: 'mp2', title: 'Deploy auth service to staging', assignee: 'Alex Rivera', assigneeInitials: 'AR', assigneeColor: 'bg-rose-500', status: 'todo', priority: 'high', dueDate: 'Jun 6', project: 'Nova Platform', isBlocked: false, source: 'meeting-parsed' },
-  { id: 'mp3', title: 'Finalize mobile design tokens + dark mode', assignee: 'Elena Vance', assigneeInitials: 'EV', assigneeColor: 'bg-purple-500', status: 'todo', priority: 'medium', dueDate: 'Jun 4', project: 'SyncSphere Mobile', isBlocked: false, source: 'meeting-parsed' },
-  { id: 'mp4', title: 'Set up DB migration test environment', assignee: 'Marcus Wright', assigneeInitials: 'MW', assigneeColor: 'bg-blue-500', status: 'todo', priority: 'high', dueDate: 'Jun 3', project: 'Nova Platform', isBlocked: false, source: 'meeting-parsed' },
-];
-
 type Stage = 'idle' | 'parsing' | 'done';
 
 export const MeetingParser = () => {
   const { meetings, addTasksFromMeeting } = useAppStore();
   const [stage, setStage] = useState<Stage>('idle');
   const [transcript, setTranscript] = useState('');
+  const [extractedTasks, setExtractedTasks] = useState<Task[]>([]);
   const [addedAll, setAddedAll] = useState(false);
   const [showVoice, setShowVoice] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const runParse = () => {
+  const runParse = async () => {
     if (!transcript.trim()) return;
     setStage('parsing');
     setProgress(0);
-    const iv = setInterval(() => setProgress(p => { if (p >= 100) { clearInterval(iv); return 100; } return p + 8; }), 120);
-    setTimeout(() => { clearInterval(iv); setProgress(100); setStage('done'); }, 1800);
+    const iv = setInterval(() => setProgress(p => { if (p >= 90) return 90; return p + 8; }), 120);
+    try {
+      const result = await geminiService.parseMeetingNotes(transcript);
+      clearInterval(iv);
+      setProgress(100);
+      setExtractedTasks(result.tasks);
+      setStage('done');
+    } catch (e) {
+      clearInterval(iv);
+      setStage('idle');
+    }
   };
 
   const addAllTasks = () => {
-    addTasksFromMeeting(parsedTasks, 'Parsed Meeting');
+    addTasksFromMeeting(extractedTasks, 'Parsed Meeting');
     setAddedAll(true);
   };
 
@@ -132,7 +136,7 @@ export const MeetingParser = () => {
                   <div className="p-5 border-b border-white/5 flex items-center justify-between">
                     <div>
                       <h3 className="font-black text-white">Extracted Tasks</h3>
-                      <p className="text-[11px] text-emerald-400 font-bold mt-0.5">{parsedTasks.length} tasks · 96% confidence</p>
+                      <p className="text-[11px] text-emerald-400 font-bold mt-0.5">{extractedTasks.length} tasks · 96% confidence</p>
                     </div>
                     <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                       onClick={addAllTasks}
@@ -142,7 +146,7 @@ export const MeetingParser = () => {
                     </motion.button>
                   </div>
                   <div className="p-4 space-y-3">
-                    {parsedTasks.map((task, i) => (
+                    {extractedTasks.map((task, i) => (
                       <motion.div key={task.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
                         className="p-4 rounded-2xl bg-white/3 border border-white/5 hover:border-white/10 transition-all">
                         <div className="flex items-start gap-3">
